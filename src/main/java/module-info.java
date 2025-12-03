@@ -13,4 +13,6 @@ module lt.ignassenkus.metmap {
 
     opens lt.ignassenkus.metmap to javafx.fxml;
     exports lt.ignassenkus.metmap;
+    exports lt.ignassenkus.metmap.controller;
+    opens lt.ignassenkus.metmap.controller to javafx.fxml;
 }
