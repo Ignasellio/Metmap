@@ -1,8 +1,6 @@
 package lt.ignassenkus.metmap;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lt.ignassenkus.metmap.util.Navigation;
 
@@ -13,7 +11,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         stage.setTitle("Metmap");
         //stage is passed to hands of Navigation util
-        Navigation.setStage(stage);
-        Navigation.showScene("menu.fxml");
+        Navigation.setPrimaryStage(stage);
+        Navigation.gotoScene("menu.fxml");
     }
 }

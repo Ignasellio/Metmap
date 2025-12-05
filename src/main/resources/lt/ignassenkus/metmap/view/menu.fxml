@@ -11,8 +11,8 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Label fx:id="welcomeText"/>
-    <Button text="settings"/>
+    <Label fx:id="welcomeText" text="Main Menu"/>
+    <Button text="settings" onAction="#onSettingsButtonClick"/>
     <Button text="create a map" onAction="#onMappingButtonClick"/>
     <Button text="compare to sample" onAction="#onComparingButtonClick"/>
 </VBox>

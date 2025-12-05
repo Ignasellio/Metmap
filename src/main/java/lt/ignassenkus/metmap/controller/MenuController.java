@@ -6,9 +6,9 @@ import lt.ignassenkus.metmap.util.Navigation;
 
 public class MenuController {
     @FXML
-    private Label welcomeText;
+    protected void onSettingsButtonClick(){Navigation.gotoScene("settings.fxml");}
     @FXML
-    protected void onMappingButtonClick() {Navigation.showScene("mapping.fxml");}
+    protected void onMappingButtonClick() {Navigation.gotoScene("mapping.fxml");}
     @FXML
-    protected void onComparingButtonClick() {Navigation.showScene("comparing.fxml");}
+    protected void onComparingButtonClick() {Navigation.gotoScene("comparing.fxml");}
 }
