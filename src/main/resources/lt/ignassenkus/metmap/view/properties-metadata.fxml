@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="lt.ignassenkus.metmap.controller.PropertiesMetadataController">
+    <padding>
+        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+    </padding>
+    <!-- Content For specifying header row -->
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label text="Headers row index"/>
+        <TextField promptText="0...N" text="0"/> <!-- Nustatyti ateinant iš išorės (text=0) -->
+        <Button text="Apply"/>
+    </HBox>
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label text="Selected header row content:"/>
+        <Label fx:id="headerRowContent"/>
+    </HBox>
+    <!-- Specifying the 3 needed columns (name, chromosome, location) -->
+    <GridPane hgap="10.0" vgap="10.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="100.0"/>
+            <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <Label text="Methylation name column name:"/>
+        <ComboBox promptText="Choose..." GridPane.columnIndex="1"/>
+        <Label text="Chromosome column name:" GridPane.rowIndex="1"/>
+        <ComboBox promptText="Choose..." GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="Genetic location column name:" GridPane.rowIndex="2"/>
+        <ComboBox promptText="Choose..." GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    </GridPane>
+
+    <!-- Save & exit button -->
+    <Button text="Confirm &amp; close" onAction="#onButtonApplyAndClose"/>
+</VBox>

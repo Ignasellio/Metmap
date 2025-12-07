@@ -1,6 +1,7 @@
 package lt.ignassenkus.metmap.util;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -13,7 +14,10 @@ public class Navigation {
     private static String CurrSceneFXMLFileName;
     private static String PrevSceneFXMLFileName;
     private static Stage primaryStage;
-    public static void setPrimaryStage(Stage stage) {
+    public static Stage getStage() {
+        return primaryStage;
+    }
+    public static void setStage(Stage stage) {
         primaryStage = stage;
     }
 
@@ -57,5 +61,11 @@ public class Navigation {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void closeWindow(javafx.event.ActionEvent event) {
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
+        stage.close();
     }
 }

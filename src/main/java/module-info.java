@@ -10,6 +10,7 @@ module lt.ignassenkus.metmap {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires univocity.parsers;
     //requires lt.ignassenkus.metmap;
 
     opens lt.ignassenkus.metmap to javafx.fxml;

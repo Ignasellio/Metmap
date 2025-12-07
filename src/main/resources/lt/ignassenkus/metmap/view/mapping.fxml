@@ -57,25 +57,28 @@
                 </rowConstraints>
                 <!-- First element (for Metadata) -->
                 <Label text="Metadata File:"/>
-                <TextField fx:id="metadataPathField" editable="false" promptText="No file selected"
-                           GridPane.columnIndex="1"/>
-                <Button fx:id="btnBrowseMetadata" mnemonicParsing="false" text="Browse File..."
-                        GridPane.columnIndex="2"/>
-                <Button text="Properties" GridPane.columnIndex="3"/>
+                <TextField fx:id="metadataPathField"
+                           editable="false" promptText="No file selected" GridPane.columnIndex="1"/>
+                <Button text="Browse File..." onAction="#onButtonBrowseMetadataClick"
+                        mnemonicParsing="false" GridPane.columnIndex="2"/>
+                <Button text="Properties" onAction="#onMetadataPropertiesButtonClick"
+                        GridPane.columnIndex="3"/>
                 <!-- Second element (for Indexes) -->
                 <Label text="Index File:" GridPane.rowIndex="1"/>
                 <TextField fx:id="indexPathField" editable="false" promptText="No file selected"
                            GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                <Button fx:id="btnBrowseIndex" mnemonicParsing="false" text="Browse File..."
-                        GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                <Button text="Properties" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                <Button text="Browse File..." onAction="#onButtonBrowseIndexPathClick"
+                        mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                <Button text="Properties" onAction="#onIndexButtonClick"
+                        GridPane.columnIndex="3" GridPane.rowIndex="1"/>
                 <!-- Third element (for Samples) -->
                 <Label text="Sample Folder:" GridPane.rowIndex="2"/>
-                <TextField fx:id="sampleFolderPathField" editable="false" promptText="No folder selected"
+                <TextField fx:id="samplesPathField" editable="false" promptText="No folder selected"
                            GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                <Button fx:id="btnBrowseSample" mnemonicParsing="false" text="Browse Folder..."
-                        GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-                <Button text="Properties" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+                <Button text="Browse Folder..." onAction="#onButtonBrowseSamplesPathClick"
+                        mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                <Button text="Properties" onAction="#onSamplesButtonClick"
+                        GridPane.columnIndex="3" GridPane.rowIndex="2"/>
             </GridPane>
             <!-- Button to compile, save map and label to inform of status -->
             <HBox alignment="CENTER_LEFT" spacing="15.0">

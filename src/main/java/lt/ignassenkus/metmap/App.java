@@ -11,7 +11,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         stage.setTitle("Metmap");
         //stage is passed to hands of Navigation util
-        Navigation.setPrimaryStage(stage);
+        Navigation.setStage(stage);
         Navigation.gotoScene("menu.fxml");
     }
 }
