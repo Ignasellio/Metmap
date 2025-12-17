@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class Navigation {
 
@@ -58,6 +59,28 @@ public class Navigation {
             newStage.initOwner(primaryStage);
 
             newStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static <T> void openPopUpWindow(String fxmlPath, String title, Consumer<T> controllerSetup){
+        try {
+            // 1. Load the FXML
+            FXMLLoader loader = new FXMLLoader(Navigation.class.getResource(FXML_PATH + fxmlPath));
+            Parent root = loader.load();
+            // 2. Get the Controller (Generic T casts it automatically)
+            T controller = loader.getController();
+            // 3. Execute the consumer logic (pass data)
+            if (controllerSetup != null) {
+                controllerSetup.accept(controller);
+            }
+            // 4. Show the Stage
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            stage.setScene(new Scene(root));
+            stage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

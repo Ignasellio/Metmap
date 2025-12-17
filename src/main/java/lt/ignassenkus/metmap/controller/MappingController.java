@@ -5,11 +5,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import lt.ignassenkus.metmap.model.Metadata;
+import lt.ignassenkus.metmap.model.MethNames;
+import lt.ignassenkus.metmap.model.Sample;
 import lt.ignassenkus.metmap.util.Navigation;
 
 import java.io.File;
 
 public class MappingController {
+
+    private Metadata metadataFile = new Metadata();
+    private MethNames indexFile;
+    private Sample[] samplesFolder;
 
     @FXML Label statusLabel;
     @FXML TextField metadataPathField;
@@ -19,16 +26,22 @@ public class MappingController {
     @FXML protected void onSettingsButtonClick(){Navigation.gotoScene("settings.fxml");}
     @FXML protected void onBackButtonClick(){Navigation.gotoScene("menu.fxml");}
 
-    @FXML protected void onButtonBrowseMetadataClick(){
+    private File getCSVFile(){
         FileChooser fileChooser = new FileChooser();
-        File chosenFile = fileChooser.showOpenDialog(Navigation.getStage());
+        FileChooser.ExtensionFilter csvFilter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
+        fileChooser.getExtensionFilters().add(csvFilter);
+        return fileChooser.showOpenDialog(Navigation.getStage());
+    }
+
+    // 3 Browse Buttons
+    @FXML protected void onButtonBrowseMetadataClick(){
+        File chosenFile = getCSVFile();
         if(chosenFile != null){
             metadataPathField.setText(chosenFile.getAbsolutePath());
         }
     }
     @FXML protected void onButtonBrowseIndexPathClick(){
-        FileChooser fileChooser = new FileChooser();
-        File chosenFile = fileChooser.showOpenDialog(Navigation.getStage());
+        File chosenFile = getCSVFile();
         if(chosenFile != null){
             indexPathField.setText(chosenFile.getAbsolutePath());
         }
@@ -41,22 +54,33 @@ public class MappingController {
         }
     }
 
+    // 3 Properties Buttons
     @FXML protected void onMetadataPropertiesButtonClick(){
         if(metadataPathField.getText().isEmpty()){
-            statusLabel.setText("Metadata file not added. Please enter metadata path");
+            statusLabel.setText("Metadata file not added. Please enter metadata path");}
+        else{
+            metadataFile.setFilePath(metadataPathField.getText());
+            //Navigation.openWindow("properties-metadata.fxml","Metmap: Metadata");
+            Navigation.openPopUpWindow("properties-metadata.fxml","Metmap: Metadata",
+                    (PropertiesMetadataController controller) -> {
+                        controller.setMetadataFile(metadataFile);
+                    });
         }
-        else{Navigation.openWindow("properties-metadata.fxml","Metmap: Metadata");}
     }
     @FXML protected void onIndexButtonClick(){
         if(indexPathField.getText().isEmpty()){
             statusLabel.setText("Index file not added. Please enter index path");
         }
-        else{Navigation.openWindow("index-metadata.fxml","Metmap: Index");}
+        else{
+            Navigation.openWindow("index-metadata.fxml","Metmap: Index");
+        }
     }
     @FXML protected void onSamplesButtonClick(){
         if(samplesPathField.getText().isEmpty()){
             statusLabel.setText("Sample folder not added. Please enter sample path");
         }
-        else{Navigation.openWindow("sample-metadata.fxml","Metmap: Samples");}
+        else{
+            Navigation.openWindow("sample-metadata.fxml","Metmap: Samples");
+        }
     }
 }

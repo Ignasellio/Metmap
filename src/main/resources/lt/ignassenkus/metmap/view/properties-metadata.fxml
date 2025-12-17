@@ -13,11 +13,15 @@
     <padding>
         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
     </padding>
+    <!-- Label for errors -->
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label fx:id="statusLabel" text="Make sure to fill all the properties."/>
+    </HBox>
     <!-- Content For specifying header row -->
     <HBox spacing="10.0" alignment="CENTER_LEFT">
         <Label text="Headers row index"/>
-        <TextField promptText="0...N" text="0"/> <!-- Nustatyti ateinant iš išorės (text=0) -->
-        <Button text="Apply"/>
+        <TextField promptText="0...N" fx:id="headerRowIndexField"/>
+        <Button text="Apply" onAction="#onButtonApplyRowIndex"/>
     </HBox>
     <HBox spacing="10.0" alignment="CENTER_LEFT">
         <Label text="Selected header row content:"/>
@@ -35,11 +39,11 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         </rowConstraints>
         <Label text="Methylation name column name:"/>
-        <ComboBox promptText="Choose..." GridPane.columnIndex="1"/>
+        <ComboBox fx:id="nameBox" promptText="Choose..." GridPane.columnIndex="1"/>
         <Label text="Chromosome column name:" GridPane.rowIndex="1"/>
-        <ComboBox promptText="Choose..." GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <ComboBox fx:id="chrBox" promptText="Choose..." GridPane.columnIndex="1" GridPane.rowIndex="1"/>
         <Label text="Genetic location column name:" GridPane.rowIndex="2"/>
-        <ComboBox promptText="Choose..." GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <ComboBox fx:id="locBox" promptText="Choose..." GridPane.columnIndex="1" GridPane.rowIndex="2"/>
     </GridPane>
 
     <!-- Save & exit button -->
