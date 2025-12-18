@@ -22,13 +22,11 @@ public class Navigation {
         primaryStage = stage;
     }
 
-    // main function used to switch between scenes
+    // USAGE: switch between scenes in the same stage, no possibility of transferring data
     public static void gotoScene(String fxmlFileName) {
         try {
-            // Loading the FXML file
             FXMLLoader loader = new FXMLLoader(Navigation.class.getResource(FXML_PATH + fxmlFileName));
             Parent root = loader.load();
-            // Creating a new scene (or update the existing one) and playing it
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -41,6 +39,7 @@ public class Navigation {
         CurrSceneFXMLFileName = fxmlFileName;
     }
 
+    // Should be substituted with gotoScene, because doesn't update Prev/Curr Scenes
     public static void gotoPrevScene(){
         gotoScene(PrevSceneFXMLFileName);
     }
@@ -49,11 +48,9 @@ public class Navigation {
         try {
             FXMLLoader loader = new FXMLLoader(Navigation.class.getResource(FXML_PATH + fxmlFileName));
             Parent root = loader.load();
-
             Stage newStage = new Stage();
             newStage.setTitle(title);
             newStage.setScene(new Scene(root));
-
             // Makes it so you can't click the main window until this one closes
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.initOwner(primaryStage);
@@ -66,21 +63,22 @@ public class Navigation {
 
     public static <T> void openPopUpWindow(String fxmlPath, String title, Consumer<T> controllerSetup){
         try {
-            // 1. Load the FXML
             FXMLLoader loader = new FXMLLoader(Navigation.class.getResource(FXML_PATH + fxmlPath));
             Parent root = loader.load();
-            // 2. Get the Controller (Generic T casts it automatically)
+
             T controller = loader.getController();
-            // 3. Execute the consumer logic (pass data)
             if (controllerSetup != null) {
                 controllerSetup.accept(controller);
             }
-            // 4. Show the Stage
+
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.setScene(new Scene(root));
-            stage.show();
+            // Makes it so you can't click the main window until this one closes
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(primaryStage);
 
+            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }

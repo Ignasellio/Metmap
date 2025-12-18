@@ -69,7 +69,7 @@
                            GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                 <Button text="Browse File..." onAction="#onButtonBrowseIndexPathClick"
                         mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                <Button text="Properties" onAction="#onIndexButtonClick"
+                <Button text="Properties" onAction="#onIndexPropertiesButtonClick"
                         GridPane.columnIndex="3" GridPane.rowIndex="1"/>
                 <!-- Third element (for Samples) -->
                 <Label text="Sample Folder:" GridPane.rowIndex="2"/>
@@ -77,12 +77,10 @@
                            GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 <Button text="Browse Folder..." onAction="#onButtonBrowseSamplesPathClick"
                         mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-                <Button text="Properties" onAction="#onSamplesButtonClick"
-                        GridPane.columnIndex="3" GridPane.rowIndex="2"/>
             </GridPane>
             <!-- Button to compile, save map and label to inform of status -->
             <HBox alignment="CENTER_LEFT" spacing="15.0">
-                <Button text="Compile"/>
+                <Button text="Compile" onAction="#onCompileClick"/>
                 <Button text="Save"/>
                 <Label fx:id="statusLabel" text="Add files for compiling."/>
             </HBox>

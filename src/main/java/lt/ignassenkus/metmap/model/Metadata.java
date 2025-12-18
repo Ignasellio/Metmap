@@ -13,17 +13,17 @@ public class Metadata {
     private byte[] chromosomes;
     private int[] locations;
     // PARAMETERS: Settings
-    private int headerRowIndex;
-    public int getHeaderRowIndex() {return headerRowIndex;}
+    private Integer headerRowIndex;
+    public Integer getHeaderRowIndex() {return headerRowIndex;}
     public void setHeaderRowIndex(int headerRowIndex) {this.headerRowIndex = headerRowIndex;}
-    private int nameColumnIndex;
-    public int getNameColumnIndex() {return nameColumnIndex;}
+    private Integer nameColumnIndex;
+    public Integer getNameColumnIndex() {return nameColumnIndex;}
     public void setNameColumnIndex(int nameColumnIndex) {this.nameColumnIndex = nameColumnIndex;}
-    private int chromosomeColumnIndex;
-    public int getChromosomeColumnIndex() {return chromosomeColumnIndex;}
+    private Integer chromosomeColumnIndex;
+    public Integer getChromosomeColumnIndex() {return chromosomeColumnIndex;}
     public void setChromosomeColumnIndex(int chromosomeColumnIndex) {this.chromosomeColumnIndex = chromosomeColumnIndex;}
-    private int locationColumnIndex;
-    public int getLocationColumnIndex() {return locationColumnIndex;}
+    private Integer locationColumnIndex;
+    public Integer getLocationColumnIndex() {return locationColumnIndex;}
     public void setLocationColumnIndex(int locationColumnIndex) {this.locationColumnIndex = locationColumnIndex;}
 
 

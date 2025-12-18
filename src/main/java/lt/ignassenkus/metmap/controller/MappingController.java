@@ -11,12 +11,14 @@ import lt.ignassenkus.metmap.model.Sample;
 import lt.ignassenkus.metmap.util.Navigation;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MappingController {
 
-    private Metadata metadataFile = new Metadata();
+    private Metadata metadataFile;
     private MethNames indexFile;
-    private Sample[] samplesFolder;
+    private List<Sample> sampleFolder = new ArrayList<Sample>();;
 
     @FXML Label statusLabel;
     @FXML TextField metadataPathField;
@@ -35,12 +37,14 @@ public class MappingController {
 
     // 3 Browse Buttons
     @FXML protected void onButtonBrowseMetadataClick(){
+        metadataFile = new Metadata();
         File chosenFile = getCSVFile();
         if(chosenFile != null){
             metadataPathField.setText(chosenFile.getAbsolutePath());
         }
     }
     @FXML protected void onButtonBrowseIndexPathClick(){
+        indexFile = new MethNames();
         File chosenFile = getCSVFile();
         if(chosenFile != null){
             indexPathField.setText(chosenFile.getAbsolutePath());
@@ -60,27 +64,31 @@ public class MappingController {
             statusLabel.setText("Metadata file not added. Please enter metadata path");}
         else{
             metadataFile.setFilePath(metadataPathField.getText());
-            //Navigation.openWindow("properties-metadata.fxml","Metmap: Metadata");
             Navigation.openPopUpWindow("properties-metadata.fxml","Metmap: Metadata",
                     (PropertiesMetadataController controller) -> {
                         controller.setMetadataFile(metadataFile);
                     });
         }
     }
-    @FXML protected void onIndexButtonClick(){
+    @FXML protected void onIndexPropertiesButtonClick(){
         if(indexPathField.getText().isEmpty()){
             statusLabel.setText("Index file not added. Please enter index path");
         }
         else{
-            Navigation.openWindow("index-metadata.fxml","Metmap: Index");
+            indexFile.setFileName(indexPathField.getText());
+            Navigation.openPopUpWindow("properties-index.fxml","Metmap: Index File",
+                    (PropertiesIndexController controller) -> {
+                        controller.setIndexFile(indexFile);
+                    });
         }
     }
-    @FXML protected void onSamplesButtonClick(){
-        if(samplesPathField.getText().isEmpty()){
-            statusLabel.setText("Sample folder not added. Please enter sample path");
-        }
-        else{
-            Navigation.openWindow("sample-metadata.fxml","Metmap: Samples");
-        }
+
+    @FXML protected void onCompileClick(){
+        statusLabel.setText("Please wait. Loading metadata file...");
+        statusLabel.setText("Please wait. Loading index file...");
+        statusLabel.setText("Please wait. Standardizing sample files (1/999)...");
+        // For LOOP kiekis filtrų
+        statusLabel.setText("Please wait. Applying filter (1/99)...");
     }
+
 }

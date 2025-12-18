@@ -16,7 +16,7 @@ public class CSVReader {
 
     /**
      * Reads a specific slice of a SINGLE row.
-     * Supports negative indexing!
+     * Supports negative indexing by looking from the end.
      *
      * @param filePath         Path to the CSV file
      * @param rowIndex         Row index. Negative values count from end (-1 is last row).
@@ -102,7 +102,7 @@ public class CSVReader {
 
     /**
      * Reads a specific slice of a SINGLE column.
-     * Supports negative indexing for rows!
+     * Supports negative indexing for columns by looking from the end.
      *
      * @param filePath    Path to CSV
      * @param columnIndex Column to read

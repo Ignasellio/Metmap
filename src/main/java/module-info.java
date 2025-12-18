@@ -11,6 +11,7 @@ module lt.ignassenkus.metmap {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires univocity.parsers;
+    requires javafx.base;
     //requires lt.ignassenkus.metmap;
 
     opens lt.ignassenkus.metmap to javafx.fxml;
