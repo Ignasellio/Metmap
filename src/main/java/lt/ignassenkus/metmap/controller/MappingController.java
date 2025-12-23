@@ -7,7 +7,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import lt.ignassenkus.metmap.model.Metadata;
 import lt.ignassenkus.metmap.model.MethNames;
+import lt.ignassenkus.metmap.model.Metmap;
 import lt.ignassenkus.metmap.model.Sample;
+import lt.ignassenkus.metmap.util.CSVReader;
 import lt.ignassenkus.metmap.util.Navigation;
 
 import java.io.File;
@@ -18,7 +20,8 @@ public class MappingController {
 
     private Metadata metadataFile;
     private MethNames indexFile;
-    private List<Sample> sampleFolder = new ArrayList<Sample>();;
+    private List<Sample> sampleFolder = new ArrayList<Sample>();
+    private Metmap metmap = new Metmap();
 
     @FXML Label statusLabel;
     @FXML TextField metadataPathField;
@@ -35,7 +38,7 @@ public class MappingController {
         return fileChooser.showOpenDialog(Navigation.getStage());
     }
 
-    // 3 Browse Buttons
+    // Browse Buttons
     @FXML protected void onButtonBrowseMetadataClick(){
         metadataFile = new Metadata();
         File chosenFile = getCSVFile();
@@ -58,7 +61,7 @@ public class MappingController {
         }
     }
 
-    // 3 Properties Buttons
+    // Properties Buttons
     @FXML protected void onMetadataPropertiesButtonClick(){
         if(metadataPathField.getText().isEmpty()){
             statusLabel.setText("Metadata file not added. Please enter metadata path");}
@@ -83,9 +86,21 @@ public class MappingController {
         }
     }
 
+    // Process Buttons
     @FXML protected void onCompileClick(){
+
         statusLabel.setText("Please wait. Loading metadata file...");
+        metmap.setNames(CSVReader.readColumn(metadataFile.getFilePath(), metadataFile.getNameColumnIndex(), metadataFile.getHeaderRowIndex(), null).toArray(new String[0]));
+        metmap.setChromosomes(CSVReader.readColumn(metadataFile.getFilePath(), metadataFile.getChromosomeColumnIndex(), metadataFile.getHeaderRowIndex(), null).stream().mapToInt(s -> switch (s.toUpperCase().trim()) {
+            case "X" -> 23;
+            case "Y" -> 24;
+            case "M" -> 25;
+            default -> Integer.parseInt(s);
+        }).toArray());
+        metmap.setLocations(CSVReader.readColumn(metadataFile.getFilePath(), metadataFile.getLocationColumnIndex(), metadataFile.getHeaderRowIndex(), null).stream().mapToInt(s -> (int) Double.parseDouble(s)).toArray());
+
         statusLabel.setText("Please wait. Loading index file...");
+        statusLabel.setText("Please wait. Readjusting indexes based on genomic location...");
         statusLabel.setText("Please wait. Standardizing sample files (1/999)...");
         // For LOOP kiekis filtrų
         statusLabel.setText("Please wait. Applying filter (1/99)...");

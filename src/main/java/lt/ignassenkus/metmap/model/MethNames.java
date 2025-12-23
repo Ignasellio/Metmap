@@ -11,5 +11,7 @@ public class MethNames {
     public void setStartingRowIndex(int startingRowIndex) {this.startingRowIndex = startingRowIndex;}
 
     private String[] methNames;
+    public void setMethNames(String[] methNames) {this.methNames = methNames;}
+    public String[] getMethNames() {return methNames;}
 }
 

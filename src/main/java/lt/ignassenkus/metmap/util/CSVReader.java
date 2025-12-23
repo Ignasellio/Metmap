@@ -223,4 +223,111 @@ public class CSVReader {
         if (result.isEmpty()) return null;
         return result.get(0);
     }
+
+    //
+    // FOR ARRAYS ONLYYYYYYY!!! WAY BETTER SPEED!!!
+    //
+
+    /**
+     * Reads a column directly into a primitive int array.
+     * Extremely memory efficient for millions of numeric rows.
+     */
+    public static int[] readColumnAsInt(String filePath, int columnIndex, Integer startRow, Integer endRow) {
+        CsvParserSettings settings = new CsvParserSettings();
+        settings.selectIndexes(columnIndex);
+        CsvParser parser = new CsvParser(settings);
+
+        int[] data = new int[1024]; // Initial capacity
+        int count = 0;
+
+        long start = (startRow == null) ? 0 : startRow;
+        long end = (endRow == null) ? Long.MAX_VALUE : endRow;
+
+        try (BufferedReader reader = Files.newBufferedReader(new File(filePath).toPath(), StandardCharsets.UTF_8)) {
+            parser.beginParsing(reader);
+            String[] row;
+            long currentRowIndex = 0;
+
+            while ((row = parser.parseNext()) != null) {
+                if (currentRowIndex >= end) break;
+                if (currentRowIndex >= start) {
+                    // Ensure Capacity
+                    if (count == data.length) {
+                        data = Arrays.copyOf(data, data.length * 2);
+                    }
+
+                    String val = (row.length > 0) ? row[0] : null;
+                    data[count++] = parseChromosomeValue(val);
+                }
+                currentRowIndex++;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error reading CSV column as int[]", e);
+        } finally {
+            parser.stopParsing();
+        }
+
+        return Arrays.copyOf(data, count); // Trim to exact size
+    }
+
+    /**
+     * Reads a column directly into a String array.
+     * Faster and slightly leaner than List<String>.
+     */
+    public static String[] readColumnAsStringArray(String filePath, int columnIndex, Integer startRow, Integer endRow) {
+        CsvParserSettings settings = new CsvParserSettings();
+        settings.selectIndexes(columnIndex);
+        CsvParser parser = new CsvParser(settings);
+
+        String[] data = new String[1024];
+        int count = 0;
+
+        long start = (startRow == null) ? 0 : startRow;
+        long end = (endRow == null) ? Long.MAX_VALUE : endRow;
+
+        try (BufferedReader reader = Files.newBufferedReader(new File(filePath).toPath(), StandardCharsets.UTF_8)) {
+            parser.beginParsing(reader);
+            String[] row;
+            long currentRowIndex = 0;
+
+            while ((row = parser.parseNext()) != null) {
+                if (currentRowIndex >= end) break;
+                if (currentRowIndex >= start) {
+                    if (count == data.length) {
+                        data = Arrays.copyOf(data, data.length * 2);
+                    }
+                    data[count++] = (row.length > 0) ? row[0] : null;
+                }
+                currentRowIndex++;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error reading CSV column as String[]", e);
+        } finally {
+            parser.stopParsing();
+        }
+
+        return Arrays.copyOf(data, count);
+    }
+
+    /**
+     * Internal helper to handle the X, Y, M logic and decimal strings like "1.0"
+     */
+    private static int parseChromosomeValue(String s) {
+        if (s == null || s.isBlank()) return 0;
+        String clean = s.toUpperCase().trim();
+        return switch (clean) {
+            case "X" -> 23;
+            case "Y" -> 24;
+            case "M", "MT" -> 25;
+            default -> {
+                try {
+                    // Handles "1", "1.0", and "154.0"
+                    yield (int) Double.parseDouble(clean);
+                } catch (NumberFormatException e) {
+                    yield 0; // Or throw an error depending on your needs
+                }
+            }
+        };
+    }
+
 }

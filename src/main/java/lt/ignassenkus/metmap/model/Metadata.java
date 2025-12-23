@@ -3,15 +3,17 @@ package lt.ignassenkus.metmap.model;
 public class Metadata {
     // PARAMETERS: Actual data
     private String filePath;
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-    public String getFilePath() {
-        return filePath;
-    }
+    public void setFilePath(String filePath) {this.filePath = filePath;}
+    public String getFilePath() {return filePath;}
     private String[] names;
+    public void setNames(String[] names) {this.names = names;}
+    public String[] getNames() {return names;}
     private byte[] chromosomes;
+    public void setChromosomes(byte[] chromosomes) {this.chromosomes = chromosomes;}
+    public byte[] getChromosomes() {return chromosomes;}
     private int[] locations;
+    public void setLocations(int[] locations) {this.locations = locations;}
+    public int[] getLocations() {return locations;}
     // PARAMETERS: Settings
     private Integer headerRowIndex;
     public Integer getHeaderRowIndex() {return headerRowIndex;}
@@ -25,7 +27,6 @@ public class Metadata {
     private Integer locationColumnIndex;
     public Integer getLocationColumnIndex() {return locationColumnIndex;}
     public void setLocationColumnIndex(int locationColumnIndex) {this.locationColumnIndex = locationColumnIndex;}
-
 
 
 }
