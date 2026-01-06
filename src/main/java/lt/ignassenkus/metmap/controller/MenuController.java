@@ -1,8 +1,7 @@
 package lt.ignassenkus.metmap.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import lt.ignassenkus.metmap.util.Navigation;
+import lt.ignassenkus.metmap.service.Navigation;
 
 public class MenuController {
     @FXML

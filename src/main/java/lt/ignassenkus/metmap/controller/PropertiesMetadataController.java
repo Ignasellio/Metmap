@@ -3,13 +3,12 @@ package lt.ignassenkus.metmap.controller;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import lt.ignassenkus.metmap.model.Metadata;
-import lt.ignassenkus.metmap.util.CSVReader;
-import lt.ignassenkus.metmap.util.Navigation;
+import lt.ignassenkus.metmap.service.CSVManager;
+import lt.ignassenkus.metmap.service.Navigation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +55,7 @@ public class PropertiesMetadataController {
         }
         try {
             int rowIndex = Integer.parseInt(rawText);
-            headerValues = CSVReader.readRow(metadataFile.getFilePath(), rowIndex, null, null);
+            headerValues = CSVManager.readRow(metadataFile.getFilePath(), rowIndex, null, null);
             if(headerValues.size() < 3){
                 statusLabel.setText("This row has less than 3 columns (" + headerValues.size() +"), this cannot be the header row.");
             }

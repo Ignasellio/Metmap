@@ -1,4 +1,4 @@
-package lt.ignassenkus.metmap.util;
+package lt.ignassenkus.metmap.service;
 
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CSVReader {
+public class CSVManager {
 
     /**
      * Reads a specific slice of a SINGLE row.
@@ -309,9 +309,8 @@ public class CSVReader {
         return Arrays.copyOf(data, count);
     }
 
-    /**
-     * Internal helper to handle the X, Y, M logic and decimal strings like "1.0"
-     */
+
+    //Internal helper to handle the X, Y, M logic and decimal strings like "1.0"
     private static int parseChromosomeValue(String s) {
         if (s == null || s.isBlank()) return 0;
         String clean = s.toUpperCase().trim();

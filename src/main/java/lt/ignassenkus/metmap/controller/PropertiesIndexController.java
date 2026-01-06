@@ -1,14 +1,11 @@
 package lt.ignassenkus.metmap.controller;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import lt.ignassenkus.metmap.model.MethNames;
-import lt.ignassenkus.metmap.util.CSVReader;
-import lt.ignassenkus.metmap.util.Navigation;
-
-import java.util.stream.Collectors;
+import lt.ignassenkus.metmap.service.CSVManager;
+import lt.ignassenkus.metmap.service.Navigation;
 
 public class PropertiesIndexController {
 
@@ -38,17 +35,17 @@ public class PropertiesIndexController {
             int rowIndex = Integer.parseInt(rawText);
             indexFile.setStartingRowIndex(rowIndex);
 
-            labelAbove.setText(CSVReader.readRow(
+            labelAbove.setText(CSVManager.readRow(
                     indexFile.getFileName(),
                     indexFile.getStartingRowIndex()-1,
                     null,
                     null).toString());
-            labelChosen.setText(CSVReader.readRow(
+            labelChosen.setText(CSVManager.readRow(
                     indexFile.getFileName(),
                     indexFile.getStartingRowIndex(),
                     null,
                     null).toString());
-            labelBelow.setText(CSVReader.readRow(
+            labelBelow.setText(CSVManager.readRow(
                     indexFile.getFileName(),
                     indexFile.getStartingRowIndex()+1,
                     null,

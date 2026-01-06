@@ -30,4 +30,8 @@ public class Metmap {
     public DMR[] getDMRs() {return DMRs;}
     public void setDMRs(DMR[] DMRs) {this.DMRs = DMRs;}
 
+//    public Metmap(String filePath, Metadata metadata, MethNames methNames) {
+//        this.setFilePath(filePath);
+//    }
+
 }

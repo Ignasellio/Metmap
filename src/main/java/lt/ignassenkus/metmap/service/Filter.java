@@ -1,4 +1,4 @@
-package lt.ignassenkus.metmap.util;
+package lt.ignassenkus.metmap.service;
 
 import lt.ignassenkus.metmap.model.Metadata;
 import lt.ignassenkus.metmap.model.MethNames;

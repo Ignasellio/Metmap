@@ -9,8 +9,8 @@ import lt.ignassenkus.metmap.model.Metadata;
 import lt.ignassenkus.metmap.model.MethNames;
 import lt.ignassenkus.metmap.model.Metmap;
 import lt.ignassenkus.metmap.model.Sample;
-import lt.ignassenkus.metmap.util.CSVReader;
-import lt.ignassenkus.metmap.util.Navigation;
+import lt.ignassenkus.metmap.service.CSVManager;
+import lt.ignassenkus.metmap.service.Navigation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -90,14 +90,14 @@ public class MappingController {
     @FXML protected void onCompileClick(){
 
         statusLabel.setText("Please wait. Loading metadata file...");
-        metmap.setNames(CSVReader.readColumn(metadataFile.getFilePath(), metadataFile.getNameColumnIndex(), metadataFile.getHeaderRowIndex(), null).toArray(new String[0]));
-        metmap.setChromosomes(CSVReader.readColumn(metadataFile.getFilePath(), metadataFile.getChromosomeColumnIndex(), metadataFile.getHeaderRowIndex(), null).stream().mapToInt(s -> switch (s.toUpperCase().trim()) {
+        metmap.setNames(CSVManager.readColumn(metadataFile.getFilePath(), metadataFile.getNameColumnIndex(), metadataFile.getHeaderRowIndex(), null).toArray(new String[0]));
+        metmap.setChromosomes(CSVManager.readColumn(metadataFile.getFilePath(), metadataFile.getChromosomeColumnIndex(), metadataFile.getHeaderRowIndex(), null).stream().mapToInt(s -> switch (s.toUpperCase().trim()) {
             case "X" -> 23;
             case "Y" -> 24;
             case "M" -> 25;
             default -> Integer.parseInt(s);
         }).toArray());
-        metmap.setLocations(CSVReader.readColumn(metadataFile.getFilePath(), metadataFile.getLocationColumnIndex(), metadataFile.getHeaderRowIndex(), null).stream().mapToInt(s -> (int) Double.parseDouble(s)).toArray());
+        metmap.setLocations(CSVManager.readColumn(metadataFile.getFilePath(), metadataFile.getLocationColumnIndex(), metadataFile.getHeaderRowIndex(), null).stream().mapToInt(s -> (int) Double.parseDouble(s)).toArray());
 
         statusLabel.setText("Please wait. Loading index file...");
         statusLabel.setText("Please wait. Readjusting indexes based on genomic location...");

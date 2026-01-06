@@ -2,7 +2,7 @@ package lt.ignassenkus.metmap;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import lt.ignassenkus.metmap.util.Navigation;
+import lt.ignassenkus.metmap.service.Navigation;
 
 import java.io.IOException;
 

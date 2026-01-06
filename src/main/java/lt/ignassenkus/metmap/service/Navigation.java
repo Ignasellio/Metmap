@@ -1,4 +1,4 @@
-package lt.ignassenkus.metmap.util;
+package lt.ignassenkus.metmap.service;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -24,11 +24,18 @@ public class Navigation {
 
     // USAGE: switch between scenes in the same stage, no possibility of transferring data
     public static void gotoScene(String fxmlFileName) {
+        // We call the main method and pass 'true' as the default
+        gotoScene(fxmlFileName, false);
+    }
+    public static void gotoScene(String fxmlFileName, boolean isFullScreen) {
         try {
             FXMLLoader loader = new FXMLLoader(Navigation.class.getResource(FXML_PATH + fxmlFileName));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
+            primaryStage.setFullScreen(isFullScreen);
+            primaryStage.sizeToScene();
+            primaryStage.centerOnScreen();
             primaryStage.show();
         } catch (IOException e) {
             System.err.println("Could not load FXML file: " + fxmlFileName);
