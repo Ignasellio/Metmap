@@ -10,6 +10,7 @@ import lt.ignassenkus.metmap.model.MethNames;
 import lt.ignassenkus.metmap.model.Metmap;
 import lt.ignassenkus.metmap.model.Sample;
 import lt.ignassenkus.metmap.service.CSVManager;
+import lt.ignassenkus.metmap.service.Mapper;
 import lt.ignassenkus.metmap.service.Navigation;
 
 import java.io.File;
@@ -88,22 +89,12 @@ public class MappingController {
 
     // Process Buttons
     @FXML protected void onCompileClick(){
-
-        statusLabel.setText("Please wait. Loading metadata file...");
-        metmap.setNames(CSVManager.readColumn(metadataFile.getFilePath(), metadataFile.getNameColumnIndex(), metadataFile.getHeaderRowIndex(), null).toArray(new String[0]));
-        metmap.setChromosomes(CSVManager.readColumn(metadataFile.getFilePath(), metadataFile.getChromosomeColumnIndex(), metadataFile.getHeaderRowIndex(), null).stream().mapToInt(s -> switch (s.toUpperCase().trim()) {
-            case "X" -> 23;
-            case "Y" -> 24;
-            case "M" -> 25;
-            default -> Integer.parseInt(s);
-        }).toArray());
-        metmap.setLocations(CSVManager.readColumn(metadataFile.getFilePath(), metadataFile.getLocationColumnIndex(), metadataFile.getHeaderRowIndex(), null).stream().mapToInt(s -> (int) Double.parseDouble(s)).toArray());
-
-        statusLabel.setText("Please wait. Loading index file...");
-        statusLabel.setText("Please wait. Readjusting indexes based on genomic location...");
-        statusLabel.setText("Please wait. Standardizing sample files (1/999)...");
-        // For LOOP kiekis filtrų
-        statusLabel.setText("Please wait. Applying filter (1/99)...");
+        statusLabel.setText("Please wait...");
+        Mapper.buildMetadata(metadataFile, indexFile.getFileName());
+        statusLabel.setText("Metadata file compiled successfully");
+        for(int i=0;i<10;i++){
+            System.out.println(metadataFile.getNames()[i] + " " + metadataFile.getChromosomes()[i] + " " + metadataFile.getLocations()[i] + " " + metadataFile.getTargetRow()[i]);
+        }
     }
 
 }
