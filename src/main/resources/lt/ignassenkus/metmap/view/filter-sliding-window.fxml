@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="lt.ignassenkus.metmap.controller.popup.filter.FilterSlidingWindowController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+
+    <Label fx:id="statusLabel" text="Configure Sliding Window Parameters" style="-fx-font-weight: bold;"/>
+
+    <GridPane hgap="10.0" vgap="10.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="150.0"/>
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
+        <children>
+            <Label text="Filter Name:"/>
+            <TextField fx:id="filterNameField" promptText="e.g. Dummy Filter" GridPane.columnIndex="1"/>
+
+            <Label text="Window Size (bp):" GridPane.rowIndex="1"/>
+            <TextField fx:id="windowSizeField" promptText="e.g. 1000" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Minumum amount of CpGs in window:" GridPane.rowIndex="2"/>
+            <TextField fx:id="minPointsField" promptText="e. g. 3" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Label text="Methylation value (0.0-1.0) to be held as 'high' methylation:" GridPane.rowIndex="3"/>
+            <TextField fx:id="minHighMetField" promptText="e.g. 0.7" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+            <Label text="Percentage (0.0-1.0) of high methylation CpGs needed in window:" GridPane.rowIndex="4"/>
+            <TextField fx:id="minDiffField" promptText="e.g. 0.2" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        </children>
+    </GridPane>
+
+    <Separator />
+
+    <HBox alignment="CENTER_RIGHT">
+        <Button text="Confirm &amp; Close" onAction="#onButtonConfirmAndClose" prefWidth="120.0"/>
+    </HBox>
+</VBox>

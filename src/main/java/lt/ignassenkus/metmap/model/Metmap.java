@@ -6,10 +6,6 @@ public class Metmap {
     public String getFilePath() {return filePath;}
     public void setFilePath(String filePath) {this.filePath = filePath;}
 
-    private int[] originalIndexes;
-    public int[] getOriginalIndexes() {return originalIndexes;}
-    public void setOriginalIndexes(int[] originalIndexes) {this.originalIndexes = originalIndexes;}
-
     private float[] meanMethylations;
     public float[] getMeanMethylations() {return meanMethylations;}
     public void setMeanMethylations(float[] meanMethylations) {this.meanMethylations = meanMethylations;}

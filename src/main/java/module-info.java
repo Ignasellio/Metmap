@@ -18,4 +18,8 @@ module lt.ignassenkus.metmap {
     exports lt.ignassenkus.metmap;
     exports lt.ignassenkus.metmap.controller;
     opens lt.ignassenkus.metmap.controller to javafx.fxml;
+    exports lt.ignassenkus.metmap.controller.popup.property;
+    opens lt.ignassenkus.metmap.controller.popup.property to javafx.fxml;
+    exports lt.ignassenkus.metmap.controller.popup.filter;
+    opens lt.ignassenkus.metmap.controller.popup.filter to javafx.fxml;
 }

@@ -4,6 +4,8 @@ import lt.ignassenkus.metmap.model.Metadata;
 import lt.ignassenkus.metmap.model.Metmap;
 import lt.ignassenkus.metmap.model.Sample;
 
+import java.util.List;
+
 public abstract class Filter {
 
     // --- VARIABLES /W SETTERS & GETTERS
@@ -16,20 +18,14 @@ public abstract class Filter {
     // --- CONSTRUCTORS ---
 
     public Filter(String name) {
-        init();
         this.name = name;
     }
 
     // --- FUNCTIONS ---
 
     /**
-     * Initializes the filter with standard pre-determined parameter values.
-     */
-    public abstract void init();
-
-    /**
      * Performs the main filter purpose. Searches for DMRs.
      * @return a Metmap object filled with discovered DMRs.
      */
-    public abstract Metmap process(Metadata metadata, Sample[] samples);
+    public abstract Metmap process(Metadata metadata, List<String> sampleNames);
 }

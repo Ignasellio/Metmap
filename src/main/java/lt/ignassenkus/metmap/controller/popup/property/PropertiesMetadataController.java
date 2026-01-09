@@ -1,4 +1,4 @@
-package lt.ignassenkus.metmap.controller;
+package lt.ignassenkus.metmap.controller.popup.property;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;

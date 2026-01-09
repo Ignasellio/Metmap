@@ -20,6 +20,8 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <BorderPane maxHeight="-Infinity"
             maxWidth="-Infinity"
             minHeight="400.0"
@@ -120,7 +122,7 @@
     </center>
 
     <right>
-        <VBox spacing="10.0" prefWidth="250.0" style="-fx-border-color: #cccccc; -fx-border-width: 0 0 0 1; -fx-background-color: #fcfcfc;" BorderPane.alignment="CENTER">
+        <VBox spacing="10.0" prefWidth="400.0" style="-fx-border-color: #cccccc; -fx-border-width: 0 0 0 1; -fx-background-color: #fcfcfc;" BorderPane.alignment="CENTER">
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
@@ -142,82 +144,33 @@
 
                 <Separator prefWidth="200.0" />
 
-                <ListView fx:id="locationListView" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: #eeeeee;" />
+                <ListView fx:id="locationListView" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>
     </right>
 
     <bottom>
-        <VBox prefHeight="300.0" spacing="10.0" style="-fx-border-color: #cccccc; -fx-border-width: 1 0 0 0; -fx-background-color: #f4f4f4;" BorderPane.alignment="CENTER">
+        <VBox spacing="10" style="-fx-background-color: #f4f4f4; -fx-border-color: #cccccc; -fx-border-width: 1 0 0 0;">
             <padding>
-                <Insets bottom="15.0" left="15.0" right="15.0" top="10.0" />
+                <Insets top="15" right="20" bottom="15" left="20"/>
             </padding>
-            <children>
-                <HBox alignment="CENTER_LEFT" spacing="15.0">
-                    <children>
-                        <Label text="Filter Manager">
-                            <font>
-                                <Font name="System Bold" size="14.0" />
-                            </font>
-                        </Label>
-                        <Region HBox.hgrow="ALWAYS" /> <Button fx:id="btnAddFilter" mnemonicParsing="false" text="+ Add New Filter" style="-fx-base: #e0e0e0; -fx-font-weight: bold;"/>
-                    </children>
-                </HBox>
 
-                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
-                    <content>
-                        <VBox fx:id="activeFiltersContainer" spacing="8.0">
-                            <children>
-                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: white; -fx-border-color: #dddddd; -fx-border-radius: 4; -fx-background-radius: 4;">
-                                    <padding>
-                                        <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
-                                    </padding>
-                                    <children>
-                                        <CheckBox selected="true" text="CpG Islands (High Density)" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </CheckBox>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Active Pipeline Filters" style="-fx-font-weight: bold; -fx-text-fill: #555555;"/>
+                <Region HBox.hgrow="ALWAYS" />
 
-                                        <Region HBox.hgrow="ALWAYS" />
+                <MenuButton text="Add New Filter..." style="-fx-base: #e1e1e1;">
+                    <items>
+                        <MenuItem text="Sliding Window" onAction="#onAddSlidingWindowClick"/>
+                    </items>
+                </MenuButton>
 
-                                        <Button mnemonicParsing="false" text="Properties">
-                                            <font>
-                                                <Font size="11.0" />
-                                            </font>
-                                            <tooltip>
-                                                <Tooltip text="View Filter Settings" />
-                                            </tooltip>
-                                        </Button>
+                <Button text="Remove Selected" onAction="#onRemoveFilterClick"
+                        style="-fx-text-fill: #cc0000; -fx-background-color: transparent; -fx-border-color: #cc0000; -fx-border-radius: 3;"/>
+            </HBox>
 
-                                        <Button mnemonicParsing="false" style="-fx-background-color: transparent; -fx-text-fill: #cc0000; -fx-font-weight: bold;" text="DELETE" />
-                                    </children>
-                                </HBox>
-
-                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: white; -fx-border-color: #dddddd; -fx-border-radius: 4; -fx-background-radius: 4;">
-                                    <padding>
-                                        <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
-                                    </padding>
-                                    <children>
-                                        <CheckBox text="Promoter Regions (2000bp)" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </CheckBox>
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Button mnemonicParsing="false" text="Properties">
-                                            <font>
-                                                <Font size="11.0" />
-                                            </font>
-                                        </Button>
-                                        <Button mnemonicParsing="false" style="-fx-background-color: transparent; -fx-text-fill: #cc0000; -fx-font-weight: bold;" text="DELETE" />
-                                    </children>
-                                </HBox>
-                            </children>
-                        </VBox>
-                    </content>
-                </ScrollPane>
-            </children>
+            <ListView fx:id="filterListView" prefHeight="120"
+                      style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #dddddd;"/>
         </VBox>
     </bottom>
 </BorderPane>

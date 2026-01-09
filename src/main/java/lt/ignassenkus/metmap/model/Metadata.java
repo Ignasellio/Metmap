@@ -1,5 +1,8 @@
 package lt.ignassenkus.metmap.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Metadata {
 
     // --- VARIABLES /W SETTERS & GETTERS
@@ -18,10 +21,18 @@ public class Metadata {
     public void setTargetRow(int[] targetRow) {this.targetRows = targetRow;}
     public int[] getTargetRow() {return targetRows;}
 
-    // Settings to read data correctly
+    // File paths
     private String filePath;
     public void setFilePath(String filePath) {this.filePath = filePath;}
     public String getFilePath() {return filePath;}
+    private String indexFilePath;
+    public String getIndexFilePath() { return indexFilePath; }
+    public void setIndexFilePath(String indexFilePath) { this.indexFilePath = indexFilePath; }
+    private List<String> sampleFilePaths = new ArrayList<>(); // Array of already sorted samples to use
+    public List<String> getSampleFilePaths() {return sampleFilePaths;}
+    public void setSampleFilePaths(List<String> sampleFilePaths) {this.sampleFilePaths = sampleFilePaths;}
+
+    // Settings to read data correctly
     private Integer IndexesStartRowIndex; // the index of first line to read in indexes file
     public Integer getIndexesStartRowIndex() {return IndexesStartRowIndex;}
     public void setIndexesStartRowIndex(Integer indexesStartRowIndex) {this.IndexesStartRowIndex = indexesStartRowIndex;}

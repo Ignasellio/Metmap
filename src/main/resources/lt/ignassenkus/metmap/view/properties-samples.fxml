@@ -8,6 +8,6 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="lt.ignassenkus.metmap.controller.PropertiesSamplesController"
+            fx:controller="lt.ignassenkus.metmap.controller.popup.property.PropertiesSamplesController"
             prefHeight="400.0" prefWidth="600.0">
 </AnchorPane>

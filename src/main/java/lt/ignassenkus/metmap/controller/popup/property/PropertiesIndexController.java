@@ -1,9 +1,9 @@
-package lt.ignassenkus.metmap.controller;
+package lt.ignassenkus.metmap.controller.popup.property;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import lt.ignassenkus.metmap.model.MethNames;
+import lt.ignassenkus.metmap.model.Metadata;
 import lt.ignassenkus.metmap.service.CSVManager;
 import lt.ignassenkus.metmap.service.Navigation;
 
@@ -15,12 +15,12 @@ public class PropertiesIndexController {
     @FXML Label labelBelow;
     @FXML TextField startRowIndexField;
 
-    MethNames indexFile;
+    Metadata metadataFile;
 
-    public void setIndexFile(MethNames indexFile) {
-        this.indexFile = indexFile;
-        if(indexFile.getStartingRowIndex() != null){
-            startRowIndexField.setText(indexFile.getStartingRowIndex().toString());
+    public void setMetadataFile(Metadata metadataFile) {
+        this.metadataFile = metadataFile;
+        if(metadataFile.getIndexesStartRowIndex() != null){
+            startRowIndexField.setText(metadataFile.getIndexesStartRowIndex().toString());
             onButtonApply();
         }
     }
@@ -33,25 +33,21 @@ public class PropertiesIndexController {
         }
         try {
             int rowIndex = Integer.parseInt(rawText);
-            indexFile.setStartingRowIndex(rowIndex);
+            metadataFile.setIndexesStartRowIndex(rowIndex);
 
             labelAbove.setText(CSVManager.readRow(
-                    indexFile.getFileName(),
-                    indexFile.getStartingRowIndex()-1,
-                    null,
-                    null).toString());
+                    metadataFile.getIndexFilePath(), // Using path from metadata
+                    metadataFile.getIndexesStartRowIndex()-1,
+                    null, null).toString());
             labelChosen.setText(CSVManager.readRow(
-                    indexFile.getFileName(),
-                    indexFile.getStartingRowIndex(),
-                    null,
-                    null).toString());
+                    metadataFile.getIndexFilePath(),
+                    metadataFile.getIndexesStartRowIndex(),
+                    null, null).toString());
             labelBelow.setText(CSVManager.readRow(
-                    indexFile.getFileName(),
-                    indexFile.getStartingRowIndex()+1,
-                    null,
-                    null).toString());
+                    metadataFile.getIndexFilePath(),
+                    metadataFile.getIndexesStartRowIndex()+1,
+                    null, null).toString());
 
-            //Dealing with labels if highest line is picked (lowest will cause catch block)
             if(rowIndex == 0){labelAbove.setText("<DOES NOT EXIST>");}
 
         } catch (NumberFormatException e) {
