@@ -32,7 +32,7 @@ public class FilterSlidingWindowController {
         try {
             // Validate inputs
             String name = filterNameField.getText().trim() + "["
-                    + "window size: " + windowSizeField.getText().trim()
+                    + "window size: " + windowSizeField.getText().trim() + " "
                     + " min. CpGs in window: " + minPointsField.getText().trim()
                     + " high meth. level: " + minHighMetField.getText().trim()
                     + " min. high meth. percent: " + minDiffField.getText().trim() + "]";

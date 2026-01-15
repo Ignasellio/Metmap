@@ -10,7 +10,6 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Metmap");
-        //stage is passed to hands of Navigation util
         Navigation.setStage(stage);
         Navigation.gotoScene("menu.fxml");
     }

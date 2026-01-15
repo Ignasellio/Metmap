@@ -1,5 +1,6 @@
 package lt.ignassenkus.metmap.service;
 
+import lt.ignassenkus.metmap.model.DMR;
 import lt.ignassenkus.metmap.model.Metadata;
 import lt.ignassenkus.metmap.model.Sample;
 
@@ -10,8 +11,8 @@ import java.util.List;
 public class Mapper {
 
     // --- SINGLETON PATTERN ---
+
     private static Mapper instance;
-    private String SampleFolder;
 
     private Mapper() {}
 
@@ -22,40 +23,18 @@ public class Mapper {
         return instance;
     }
 
+    // --- VARIABLES (WITH SETTERS & GETTERS) ---
+
+    private String SampleFolder;
     public String getSampleFolder() {return SampleFolder;}
     public void setSampleFolder(String sampleFolder) {SampleFolder = sampleFolder;}
+    private String ProcessedSampleFolder;
+    public String getProcessedSampleFolder() {return ProcessedSampleFolder;}
+    public void setProcessedSampleFolder(String processedSampleFolder) {ProcessedSampleFolder = processedSampleFolder;}
 
     // --- CORE LOGIC ---
 
-    /**
-     * Iterates through a folder and processes each file.
-     * This moves data from RAM to disk one sample at a time.
-     */
-    public List<String> compileSamples(Metadata metadata, String sourceFolderPath) {
-        File folder = new File(sourceFolderPath);
-        File[] listOfFiles = folder.listFiles();
-        List<String> results = new ArrayList<>();
-
-        if (listOfFiles == null) {
-            System.err.println("Source folder is empty or invalid: " + sourceFolderPath);
-            return null;
-        }
-
-        System.out.println("Starting batch compilation of samples...");
-        for (File file : listOfFiles) {
-            if (file.isFile()) {
-                // Process and save each file one by one to preserve RAM
-                String savedPath = saveSample(metadata, file.getAbsolutePath());
-                results.add(savedPath);
-            }
-        }
-        System.out.println("All samples compiled and saved to: " + this.SampleFolder);
-
-        return results;
-    }
-
     public void buildMetadata(Metadata metadata, String indexFilePath) {
-
         // Read all CpGs' name, chromosome and position values from metadata file
         System.out.println("Reading CpG names from metadata file...");
         String[] metaNames = CSVManager.readColumn(metadata.getFilePath(), metadata.getNameColumnIndex(), metadata.getHeaderRowIndex()+1, null)
@@ -137,6 +116,33 @@ public class Mapper {
         metadata.setTargetRow(finalTargetRows);
 
         System.out.println("Metadata build complete. Sorted by location.");
+    }
+
+    /**
+     * Iterates through a folder and processes each file.
+     * This moves data from RAM to disk one sample at a time.
+     */
+    public List<String> buildSamples(Metadata metadata) {
+        File folder = new File(ProcessedSampleFolder);
+        File[] listOfFiles = folder.listFiles();
+        List<String> results = new ArrayList<>();
+
+        if (listOfFiles == null) {
+            System.err.println("Source folder is empty or invalid: " + ProcessedSampleFolder);
+            return null;
+        }
+
+        System.out.println("Starting batch compilation of samples...");
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                // Process and save each file one by one to preserve RAM
+                String savedPath = saveSample(metadata, file.getAbsolutePath());
+                results.add(savedPath);
+            }
+        }
+        System.out.println("All samples compiled and saved to: " + this.SampleFolder);
+
+        return results;
     }
 
     /**
@@ -240,6 +246,73 @@ public class Mapper {
         rawValues.clear();
         return sample;
     }
+
+    // --- DMR MANIPULATION ---
+
+    public List<DMR> mergeDMRs(List<DMR> discoveredDMRs) {
+        if (discoveredDMRs.isEmpty()) return discoveredDMRs;
+
+        // Sorting by Chromosome then Start Location
+        discoveredDMRs.sort((a, b) -> {
+            if (a.getChromosome() != b.getChromosome())
+                return Byte.compare(a.getChromosome(), b.getChromosome());
+            return Integer.compare(a.getStartLocation(), b.getStartLocation());
+        });
+
+        List<DMR> merged = new ArrayList<>();
+        DMR current = discoveredDMRs.get(0);
+
+        for (int i = 1; i < discoveredDMRs.size(); i++) {
+            DMR next = discoveredDMRs.get(i);
+
+            // Check if they are on the same chromosome and close enough
+            if (next.getChromosome() == current.getChromosome() &&
+                    next.getStartLocation() <= (current.getEndLocation())) {
+
+                // Update the current DMR's end point to the furthest reach
+                current.setEndLocation(Math.max(current.getEndLocation(), next.getEndLocation()));
+
+                // Recalculate mean methylation (optional: weighted average is better)
+                float combinedMean = (current.getMeanMethylation() + next.getMeanMethylation()) / 2.0f;
+                current.setMeanMethylation(combinedMean);
+            } else {
+                merged.add(current);
+                current = next;
+            }
+        }
+        merged.add(current);
+        return merged;
+    }
+
+    public void refineDMRToCpGs(DMR dmr, Metadata metadata) {
+        int[] locations = metadata.getLocations();
+        int[] chromosomes = metadata.getChromosomes();
+
+        int firstCpG = -1;
+        int lastCpG = -1;
+
+        for (int i = 0; i < locations.length; i++) {
+            // Only look at the correct chromosome
+            if (chromosomes[i] != dmr.getChromosome()) continue;
+
+            // Find the first CpG within the DMR boundaries
+            if (locations[i] >= dmr.getStartLocation() && firstCpG == -1) {
+                firstCpG = locations[i];
+            }
+
+            // Keep track of the last CpG seen within the boundaries
+            if (locations[i] <= dmr.getEndLocation() && locations[i] >= dmr.getStartLocation()) {
+                lastCpG = locations[i];
+            }
+        }
+
+        if (firstCpG != -1 && lastCpG != -1) {
+            dmr.setStartLocation(firstCpG);
+            dmr.setEndLocation(lastCpG);
+        }
+    }
+
+    // --- TRANSLATION ---
 
     private int parseChromosome(String s) {
         if (s == null) return 0;

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" spacing="25.0" prefWidth="500.0" prefHeight="450.0"
+<VBox alignment="TOP_CENTER" spacing="25.0" prefWidth="500.0" prefHeight="350.0"
       style="-fx-background-color: #f4f4f4;" xmlns:fx="http://javafx.com/fxml"
       fx:controller="lt.ignassenkus.metmap.controller.MenuController">
     <padding>
@@ -20,27 +20,14 @@
 
     <Separator />
 
-    <VBox spacing="10.0" alignment="CENTER_LEFT">
-        <Label text="Samples Directory (will hold processed samples to not burden RAM):" style="-fx-text-fill: #555;" />
-        <HBox spacing="10.0" alignment="CENTER">
-            <TextField fx:id="folderPathField" editable="false" HBox.hgrow="ALWAYS"
-                       promptText="No folder selected..."
-                       style="-fx-background-radius: 5;"/>
-            <Button text="Browse..." onAction="#onSelectFolderClick"
-                    style="-fx-background-radius: 5;"/>
-        </HBox>
-    </VBox>
-
-    <Separator />
-
     <VBox spacing="15.0" alignment="CENTER" maxWidth="250.0">
+        <Button text="Settings" onAction="#onSettingsButtonClick"
+                maxWidth="Infinity" style="-fx-padding: 10; -fx-font-size: 14;"/>
         <Button fx:id="mapButton" text="Create a Map"
                 onAction="#onMappingButtonClick"
                 maxWidth="Infinity" style="-fx-padding: 10; -fx-font-size: 14;"/>
         <Button fx:id="compareButton" text="Compare to Sample"
                 onAction="#onComparingButtonClick"
-                maxWidth="Infinity" style="-fx-padding: 10; -fx-font-size: 14;"/>
-        <Button text="Settings" onAction="#onSettingsButtonClick"
                 maxWidth="Infinity" style="-fx-padding: 10; -fx-font-size: 14;"/>
     </VBox>
 </VBox>

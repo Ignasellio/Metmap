@@ -57,7 +57,7 @@
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                 </rowConstraints>
-                <!-- First element (for Metadata) -->
+                <!-- First element (for metadata) -->
                 <Label text="Metadata File:"/>
                 <TextField fx:id="metadataPathField"
                            editable="false" promptText="No file selected" GridPane.columnIndex="1"/>
@@ -65,7 +65,7 @@
                         mnemonicParsing="false" GridPane.columnIndex="2"/>
                 <Button text="Properties" onAction="#onMetadataPropertiesButtonClick"
                         GridPane.columnIndex="3"/>
-                <!-- Second element (for Indexes) -->
+                <!-- Second element (for indexes) -->
                 <Label text="Index File:" GridPane.rowIndex="1"/>
                 <TextField fx:id="indexPathField" editable="false" promptText="No file selected"
                            GridPane.columnIndex="1" GridPane.rowIndex="1"/>
@@ -73,17 +73,23 @@
                         mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
                 <Button text="Properties" onAction="#onIndexPropertiesButtonClick"
                         GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-                <!-- Third element (for Samples) -->
+                <!-- Third element (for samples) -->
                 <Label text="Sample Folder:" GridPane.rowIndex="2"/>
                 <TextField fx:id="samplesPathField" editable="false" promptText="No folder selected"
                            GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 <Button text="Browse Folder..." onAction="#onButtonBrowseSamplesPathClick"
                         mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                <!-- Fourth element (for porcessed samples) -->
+                <Label text="Processed Sample Folder:" GridPane.rowIndex="3"/>
+                <TextField fx:id="processedSamplesPathField" editable="false" promptText="No folder selected"
+                           GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Button text="Browse Folder..." onAction="#onButtonBrowseProcessedSamplesPathClick"
+                        mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
             </GridPane>
             <!-- Button to compile, save map and label to inform of status -->
             <HBox alignment="CENTER_LEFT" spacing="15.0">
                 <Button text="Compile" onAction="#onCompileClick"/>
-                <Button text="Save"/>
+                <Button text="Save Map To..." onAction="#onExportDMRClick"/>
                 <Label fx:id="statusLabel" text="Add files for compiling."/>
             </HBox>
             <Separator prefWidth="200.0"/>
@@ -122,30 +128,29 @@
     </center>
 
     <right>
-        <VBox spacing="10.0" prefWidth="400.0" style="-fx-border-color: #cccccc; -fx-border-width: 0 0 0 1; -fx-background-color: #fcfcfc;" BorderPane.alignment="CENTER">
+        <VBox spacing="10.0" prefWidth="400.0"
+              style="-fx-border-color: #cccccc; -fx-border-width: 0 0 0 1; -fx-background-color: #fcfcfc;"
+              BorderPane.alignment="CENTER">
             <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
-            <children>
-                <VBox spacing="2.0">
-                    <children>
-                        <Label text="Methylation Zones" textFill="#666666">
-                            <font>
-                                <Font size="11.0" />
-                            </font>
-                        </Label>
-                        <Label fx:id="locationCountLabel" text="0 Found">
-                            <font>
-                                <Font name="System Bold" size="18.0" />
-                            </font>
-                        </Label>
-                    </children>
-                </VBox>
+            <VBox spacing="2.0">
+                <Label text="Methylation Zones" textFill="#666666">
+                    <font>
+                        <Font size="11.0"/>
+                    </font>
+                </Label>
+                <Label fx:id="locationCountLabel" text="0 Found">
+                    <font>
+                        <Font name="System Bold" size="18.0"/>
+                    </font>
+                </Label>
+            </VBox>
 
-                <Separator prefWidth="200.0" />
+            <Separator prefWidth="200.0"/>
 
-                <ListView fx:id="locationListView" VBox.vgrow="ALWAYS" />
-            </children>
+            <ListView fx:id="locationListView" VBox.vgrow="ALWAYS"/>
+
         </VBox>
     </right>
 

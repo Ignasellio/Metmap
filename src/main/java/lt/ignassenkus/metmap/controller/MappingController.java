@@ -2,6 +2,7 @@ package lt.ignassenkus.metmap.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -16,6 +17,7 @@ import lt.ignassenkus.metmap.model.DMR;
 import lt.ignassenkus.metmap.model.Metadata;
 import lt.ignassenkus.metmap.model.Metmap;
 import lt.ignassenkus.metmap.model.Sample;
+import lt.ignassenkus.metmap.service.DMRExporter;
 import lt.ignassenkus.metmap.service.Mapper;
 import lt.ignassenkus.metmap.service.Navigation;
 import lt.ignassenkus.metmap.service.filter.Filter;
@@ -24,9 +26,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class MappingController {
+
+    // --- OBJECTS AND HELPER FUNCTIONS ---
 
     private Metadata metadataFile;
     private List<Sample> sampleFolder = new ArrayList<Sample>();
@@ -41,6 +44,7 @@ public class MappingController {
     @FXML TextField metadataPathField;
     @FXML TextField indexPathField;
     @FXML TextField samplesPathField;
+    @FXML TextField processedSamplesPathField;
 
     @FXML protected void onSettingsButtonClick(){Navigation.gotoScene("settings.fxml");}
     @FXML protected void onBackButtonClick(){Navigation.gotoScene("menu.fxml");}
@@ -50,6 +54,38 @@ public class MappingController {
         FileChooser.ExtensionFilter csvFilter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
         fileChooser.getExtensionFilters().add(csvFilter);
         return fileChooser.showOpenDialog(Navigation.getStage());
+    }
+
+    // --- MAIN FUNCTIONS ---
+
+    @FXML
+    public void initialize() {
+        // Setup filter list
+        filterListView.setItems(activeFilters);
+        filterListView.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(Filter item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) { setText(null); }
+                else { setText(item.getName()); }
+            }
+        });
+        // Setup the DMR list
+        locationListView.setItems(discoveredDMRs);
+        locationListView.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(DMR item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    // Overhaul: Format how the DMR looks in the sidebar
+                    // Assuming DMR has getChromosome(), getStart(), and getEnd()
+                    setText(String.format("Chr: %s | Pos: %d - %d",
+                            item.getChromosome(), item.getStartLocation(), item.getEndLocation()));
+                }
+            }
+        });
     }
 
     // Browse Buttons
@@ -72,6 +108,15 @@ public class MappingController {
         File chosenFolder = folderChooser.showDialog(Navigation.getStage());
         if(chosenFolder != null){
             samplesPathField.setText(chosenFolder.getAbsolutePath());
+            Mapper.getInstance().setSampleFolder(samplesPathField.getText());
+        }
+    }
+    @FXML protected void onButtonBrowseProcessedSamplesPathClick(){
+        DirectoryChooser folderChooser = new DirectoryChooser();
+        File chosenFolder = folderChooser.showDialog(Navigation.getStage());
+        if(chosenFolder != null){
+            processedSamplesPathField.setText(chosenFolder.getAbsolutePath());
+            Mapper.getInstance().setProcessedSampleFolder(processedSamplesPathField.getText());
         }
     }
 
@@ -101,54 +146,26 @@ public class MappingController {
 
 
 
-    @FXML
-    public void initialize() {
-        // Setup filter list (as you had it)
-        filterListView.setItems(activeFilters);
-        filterListView.setCellFactory(param -> new ListCell<>() {
-            @Override
-            protected void updateItem(Filter item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) { setText(null); }
-                else { setText(item.getName()); }
-            }
-        });
-
-        // 4. SETUP the DMR list
-        locationListView.setItems(discoveredDMRs);
-        locationListView.setCellFactory(param -> new ListCell<>() {
-            @Override
-            protected void updateItem(DMR item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    // Overhaul: Format how the DMR looks in the sidebar
-                    // Assuming DMR has getChromosome(), getStart(), and getEnd()
-                    setText(String.format("Chr: %s | Pos: %d - %d",
-                            item.getChromosome(), item.getStartLocation(), item.getEndLocation()));
-                }
-            }
-        });
-    }
 
 
-
-    // --- WTF IS GOING ON FROM HERE?? ---
-
-    @FXML
-    protected void onRemoveFilterClick() {
-        Filter selected = filterListView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            activeFilters.remove(selected);
-            statusLabel.setText("Removed filter.");
-        } else {
-            statusLabel.setText("Please select a filter to remove.");
-        }
-    }
 
     @FXML
     protected void onCompileClick() {
+
+        // Re-checking all possible errors and informing
+        if (metadataFile == null || metadataPathField.getText().isEmpty()) {
+            statusLabel.setText("Error: Metadata file is missing!");
+            return;
+        }
+        if (Mapper.getInstance().getSampleFolder() == null) {
+            statusLabel.setText("Error: Sample folder not set!");
+            return;
+        }
+        if (Mapper.getInstance().getProcessedSampleFolder() == null){
+            statusLabel.setText("Error: Processed sample folder not set!");
+            return;
+        }
+
         // Disable buttons so the user doesn't click "Compile" twice
         // (You'll need fx:id for your compile button to do this)
         statusLabel.setText("Initializing...");
@@ -159,10 +176,14 @@ public class MappingController {
                 // 1. Build Metadata
                 updateMessage("Building metadata (this may take a while)...");
                 Mapper.getInstance().buildMetadata(metadataFile, metadataFile.getIndexFilePath());
+                System.out.println("Metadata built!");
 
                 // 2. Compile Samples
                 updateMessage("Compiling samples (this may take a while)...");
-                metadataFile.setSampleFilePaths(Mapper.getInstance().compileSamples(metadataFile, samplesPathField.getText()));
+                System.out.println(Mapper.getInstance().getSampleFolder());
+                System.out.println(Mapper.getInstance().getProcessedSampleFolder());
+                metadataFile.setSampleFilePaths(Mapper.getInstance().buildSamples(metadataFile));
+                System.out.println("Samples built well!");
 
                 // 3. Run Filters
                 List<DMR> allDiscoveredDMRs = new ArrayList<>();
@@ -177,6 +198,9 @@ public class MappingController {
                         allDiscoveredDMRs.addAll(Arrays.asList(result.getDMRs()));
                     }
                 }
+
+                // 4. merge and cut(not yet implemented) the DMRs and return them
+                allDiscoveredDMRs = Mapper.getInstance().mergeDMRs(allDiscoveredDMRs);
                 return allDiscoveredDMRs;
             }
         };
@@ -204,11 +228,23 @@ public class MappingController {
         new Thread(compileTask).start();
     }
 
+    // --- FILTER LOGIC ---
+
+    @FXML
+    protected void onRemoveFilterClick() {
+        Filter selected = filterListView.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            activeFilters.remove(selected);
+            statusLabel.setText("Removed filter.");
+        } else {
+            statusLabel.setText("Please select a filter to remove.");
+        }
+    }
+
     @FXML
     protected void onAddSlidingWindowClick() {
         Navigation.openPopUpWindow("filter-sliding-window.fxml", "Add Sliding Window Filter",
                 (FilterSlidingWindowController controller) -> {
-                    // Pass a consumer that adds the result to our list
                     controller.setOnSave(newFilter -> {
                         activeFilters.add(newFilter);
                         statusLabel.setText("Filter added: " + newFilter.getName());
@@ -216,4 +252,30 @@ public class MappingController {
                 });
     }
 
+    @FXML
+    protected void onExportDMRClick() {
+        if (discoveredDMRs.isEmpty()) {
+            statusLabel.setText("No DMRs to export.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save DMR Map");
+        fileChooser.setInitialFileName("discovered_dmrs.csv");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv")
+        );
+
+        File file = fileChooser.showSaveDialog(Navigation.getStage());
+
+        if (file != null) {
+            try {
+                DMRExporter.exportToCSV(discoveredDMRs, file);
+                statusLabel.setText("Exported " + discoveredDMRs.size() + " DMRs to " + file.getName());
+            } catch (Exception e) {
+                statusLabel.setText("Export failed: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
 }
