@@ -23,15 +23,6 @@ public class Mapper {
         return instance;
     }
 
-    // --- VARIABLES (WITH SETTERS & GETTERS) ---
-
-    private String SampleFolder;
-    public String getSampleFolder() {return SampleFolder;}
-    public void setSampleFolder(String sampleFolder) {SampleFolder = sampleFolder;}
-    private String ProcessedSampleFolder;
-    public String getProcessedSampleFolder() {return ProcessedSampleFolder;}
-    public void setProcessedSampleFolder(String processedSampleFolder) {ProcessedSampleFolder = processedSampleFolder;}
-
     // --- CORE LOGIC ---
 
     public void buildMetadata(Metadata metadata, String indexFilePath) {
@@ -118,17 +109,19 @@ public class Mapper {
         System.out.println("Metadata build complete. Sorted by location.");
     }
 
+    // --- SAMPLE MANIPULATION LOGIC ---
+
     /**
      * Iterates through a folder and processes each file.
      * This moves data from RAM to disk one sample at a time.
      */
-    public List<String> buildSamples(Metadata metadata) {
-        File folder = new File(ProcessedSampleFolder);
+    public List<String> buildSamples(Metadata metadata, String originalSampleFolder, String processedSampleFolder) {
+        File folder = new File(processedSampleFolder);
         File[] listOfFiles = folder.listFiles();
         List<String> results = new ArrayList<>();
 
         if (listOfFiles == null) {
-            System.err.println("Source folder is empty or invalid: " + ProcessedSampleFolder);
+            System.err.println("Source folder is empty or invalid: " + processedSampleFolder);
             return null;
         }
 
@@ -136,11 +129,11 @@ public class Mapper {
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 // Process and save each file one by one to preserve RAM
-                String savedPath = saveSample(metadata, file.getAbsolutePath());
+                String savedPath = saveSample(metadata, originalSampleFolder, file.getAbsolutePath());
                 results.add(savedPath);
             }
         }
-        System.out.println("All samples compiled and saved to: " + this.SampleFolder);
+        System.out.println("All samples compiled and saved to: " + processedSampleFolder);
 
         return results;
     }
@@ -190,9 +183,9 @@ public class Mapper {
         return sample;
     }
 
-    public String saveSample(Metadata metadata, String inputPath) {
+    public String saveSample(Metadata metadata, String originalSampleFolder, String inputPath) {
         File inputFile = new File(inputPath);
-        String outputPath = SampleFolder + File.separator + inputFile.getName();
+        String outputPath = originalSampleFolder + File.separator + inputFile.getName();
 
         // 1. Read the raw data into a temporary float array
         Sample sample = orderSample(metadata, inputPath);
@@ -247,34 +240,34 @@ public class Mapper {
         return sample;
     }
 
-    // --- DMR MANIPULATION ---
+    // --- DMR MANIPULATION LOGIC ---
 
-    public List<DMR> mergeDMRs(List<DMR> discoveredDMRs) {
-        if (discoveredDMRs.isEmpty()) return discoveredDMRs;
-
-        // Sorting by Chromosome then Start Location
-        discoveredDMRs.sort((a, b) -> {
+    public List<DMR> mergeDMRs(boolean sortAndMerge, List<DMR> existingDMRs, List<DMR> newDMRs) {
+        List<DMR> all = new ArrayList<>(existingDMRs);
+        all.addAll(newDMRs);
+        if (!sortAndMerge || all.size() <= 1) return all;
+        all.sort((a, b) -> {
             if (a.getChromosome() != b.getChromosome())
                 return Byte.compare(a.getChromosome(), b.getChromosome());
             return Integer.compare(a.getStartLocation(), b.getStartLocation());
         });
 
         List<DMR> merged = new ArrayList<>();
-        DMR current = discoveredDMRs.get(0);
+        DMR current = all.get(0);
 
-        for (int i = 1; i < discoveredDMRs.size(); i++) {
-            DMR next = discoveredDMRs.get(i);
+        for (int i = 1; i < all.size(); i++) {
+            DMR next = all.get(i);
 
-            // Check if they are on the same chromosome and close enough
             if (next.getChromosome() == current.getChromosome() &&
-                    next.getStartLocation() <= (current.getEndLocation())) {
-
-                // Update the current DMR's end point to the furthest reach
+                    next.getStartLocation() <= current.getEndLocation()) {
+                long widthCurrent = current.getEndLocation() - current.getStartLocation() + 1;
+                long widthNext = next.getEndLocation() - next.getStartLocation() + 1;
+                float weightedMean = (float) (((current.getMeanMethylation() * widthCurrent) +
+                        (next.getMeanMethylation() * widthNext)) /
+                        (widthCurrent + widthNext));
+                // Update DMR to the new boundaries
                 current.setEndLocation(Math.max(current.getEndLocation(), next.getEndLocation()));
-
-                // Recalculate mean methylation (optional: weighted average is better)
-                float combinedMean = (current.getMeanMethylation() + next.getMeanMethylation()) / 2.0f;
-                current.setMeanMethylation(combinedMean);
+                current.setMeanMethylation(weightedMean);
             } else {
                 merged.add(current);
                 current = next;
@@ -284,35 +277,61 @@ public class Mapper {
         return merged;
     }
 
-    public void refineDMRToCpGs(DMR dmr, Metadata metadata) {
-        int[] locations = metadata.getLocations();
-        int[] chromosomes = metadata.getChromosomes();
-
-        int firstCpG = -1;
-        int lastCpG = -1;
-
-        for (int i = 0; i < locations.length; i++) {
-            // Only look at the correct chromosome
-            if (chromosomes[i] != dmr.getChromosome()) continue;
-
-            // Find the first CpG within the DMR boundaries
-            if (locations[i] >= dmr.getStartLocation() && firstCpG == -1) {
-                firstCpG = locations[i];
-            }
-
-            // Keep track of the last CpG seen within the boundaries
-            if (locations[i] <= dmr.getEndLocation() && locations[i] >= dmr.getStartLocation()) {
-                lastCpG = locations[i];
-            }
+    public List<DMR> mergeFiltersDMRs(boolean isStrict, List<DMR> oldDMRs, List<DMR> discoveredDMRs) {
+        List<DMR> result = new ArrayList<>();
+        if (oldDMRs.isEmpty()) {
+            isStrict = false;
         }
 
-        if (firstCpG != -1 && lastCpG != -1) {
-            dmr.setStartLocation(firstCpG);
-            dmr.setEndLocation(lastCpG);
+        if (isStrict) { // STRICT MODE: INTERSECTION
+            for (DMR oldDMR : oldDMRs) {
+                for (DMR discoveredDMR : discoveredDMRs) {
+                    if (oldDMR.getChromosome() == discoveredDMR.getChromosome()) {
+                        int intersectStart = Math.max(oldDMR.getStartLocation(), discoveredDMR.getStartLocation());
+                        int intersectEnd = Math.min(oldDMR.getEndLocation(), discoveredDMR.getEndLocation());
+                        if (intersectStart <= intersectEnd) { // adding new DMR
+                            float combinedMean = (oldDMR.getMeanMethylation() + discoveredDMR.getMeanMethylation()) / 2.0f;
+                            result.add(new DMR(oldDMR.getChromosome(), intersectStart, intersectEnd, combinedMean));
+                        }
+                    }
+                }
+            }
+        } else { // NON-STRICT MODE: UNION
+            List<DMR> allDMRs = new ArrayList<>(oldDMRs);
+            allDMRs.addAll(discoveredDMRs);
+
+            if (allDMRs.isEmpty()) return result;
+
+            // Sort by Chromosome then Start Location
+            allDMRs.sort((a, b) -> {
+                if (a.getChromosome() != b.getChromosome())
+                    return Byte.compare(a.getChromosome(), b.getChromosome());
+                return Integer.compare(a.getStartLocation(), b.getStartLocation());
+            });
+
+            DMR current = allDMRs.get(0);
+            for (int i = 1; i < allDMRs.size(); i++) {
+                DMR next = allDMRs.get(i);
+
+                // If they overlap or touch, merge them
+                if (next.getChromosome() == current.getChromosome() &&
+                        next.getStartLocation() <= current.getEndLocation()) {
+
+                    current.setEndLocation(Math.max(current.getEndLocation(), next.getEndLocation()));
+                    float combinedMean = (current.getMeanMethylation() + next.getMeanMethylation()) / 2.0f;
+                    current.setMeanMethylation(combinedMean);
+                } else {
+                    result.add(current);
+                    current = next;
+                }
+            }
+            result.add(current);
         }
+
+        return result;
     }
 
-    // --- TRANSLATION ---
+    // --- PRIVATE HELPER FUNCTIONS ---
 
     private int parseChromosome(String s) {
         if (s == null) return 0;

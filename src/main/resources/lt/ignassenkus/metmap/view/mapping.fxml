@@ -22,6 +22,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.canvas.Canvas?>
 <BorderPane maxHeight="-Infinity"
             maxWidth="-Infinity"
             minHeight="400.0"
@@ -112,17 +113,11 @@
             </HBox>
 
             <VBox style="-fx-border-color: #cccccc; -fx-border-radius: 4;" VBox.vgrow="ALWAYS">
-                <children>
-                    <LineChart fx:id="methylationChart" createSymbols="false" title="Methylation Level per Base Pair"
-                               VBox.vgrow="ALWAYS">
-                        <xAxis>
-                            <NumberAxis label="Genomic Position" side="BOTTOM"/>
-                        </xAxis>
-                        <yAxis>
-                            <NumberAxis label="Methylation %" side="LEFT" upperBound="100.0"/>
-                        </yAxis>
-                    </LineChart>
-                </children>
+                <ScrollPane fx:id="mapScrollPane" fitToHeight="true" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
+                    <HBox fx:id="canvasContainer" spacing="0">
+                        <Canvas fx:id="methylationCanvas" height="200.0" width="2000.0" />
+                    </HBox>
+                </ScrollPane>
             </VBox>
         </VBox>
     </center>

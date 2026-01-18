@@ -224,10 +224,6 @@ public class CSVManager {
         return result.get(0);
     }
 
-    //
-    // FOR ARRAYS ONLYYYYYYY!!! WAY BETTER SPEED!!!
-    //
-
     /**
      * Reads a column directly into a primitive int array.
      * Extremely memory efficient for millions of numeric rows.

@@ -15,6 +15,14 @@ public class DMR {
 
     // --- SETTERS & GETTERS ---
     public byte getChromosome() {return chromosome;}
+    public String getChromosomeName() {
+        return switch (this.chromosome) {
+            case 23 -> "X";
+            case 24 -> "Y";
+            case 25 -> "M";
+            default -> String.valueOf(this.chromosome);
+        };
+    }
     public void setChromosome(byte chromosome) {this.chromosome = chromosome;}
     public int getStartLocation() {return startLocation;}
     public void setStartLocation(int startLocation) {this.startLocation = startLocation;}
@@ -23,9 +31,10 @@ public class DMR {
     public float getMeanMethylation() {return meanMethylation;}
     public void setMeanMethylation(float meanMethylation) {this.meanMethylation = meanMethylation;}
 
-    // --- HELPERS ---
     public String toString(){
         return "chr: " + chromosome + " start: " + startLocation + " end: " + endLocation + " mean meth.: " + meanMethylation;
     }
+
+    // TODO: getCpGs function, gets all CpGs from metadata that are inside DMR
 
 }
