@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import lt.ignassenkus.metmap.controller.popup.filter.FilterSlidingWindowController;
+import lt.ignassenkus.metmap.controller.popup.filter.FilterVarianceController;
 import lt.ignassenkus.metmap.controller.popup.property.PropertiesIndexController;
 import lt.ignassenkus.metmap.controller.popup.property.PropertiesMetadataController;
 import lt.ignassenkus.metmap.model.DMR;
@@ -279,11 +280,19 @@ public class MappingController {
         }
     }
 
-    @FXML
-    protected void onAddSlidingWindowClick() {
+    @FXML protected void onAddSlidingWindowClick() {
         Navigation.openPopUpWindow("filter-sliding-window.fxml", "Add Sliding Window Filter",
                 (FilterSlidingWindowController controller) -> {
                     controller.setOnSave(newFilter -> {
+                        activeFilters.add(newFilter);
+                        statusLabel.setText("Filter added: " + newFilter.getName());
+                    });
+                });
+    }
+    @FXML protected void onAddVarianceClick(){
+        Navigation.openPopUpWindow("filter-variance.fxml", "Add Variance Filter",
+                (FilterVarianceController controller) -> {
+                controller.setOnSave(newFilter -> {
                         activeFilters.add(newFilter);
                         statusLabel.setText("Filter added: " + newFilter.getName());
                     });

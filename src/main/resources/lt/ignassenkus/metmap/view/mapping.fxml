@@ -162,6 +162,7 @@
                 <MenuButton text="Add New Filter..." style="-fx-base: #e1e1e1;">
                     <items>
                         <MenuItem text="Sliding Window" onAction="#onAddSlidingWindowClick"/>
+                        <MenuItem text="Welford's Variance" onAction="#onAddVarianceClick"/>
                     </items>
                 </MenuButton>
 
