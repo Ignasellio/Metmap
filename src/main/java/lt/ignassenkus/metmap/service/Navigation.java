@@ -22,9 +22,7 @@ public class Navigation {
         primaryStage = stage;
     }
 
-    // USAGE: switch between scenes in the same stage, no possibility of transferring data
     public static void gotoScene(String fxmlFileName) {
-        // We call the main method and pass 'true' as the default
         gotoScene(fxmlFileName, false);
     }
     public static void gotoScene(String fxmlFileName, boolean isFullScreen) {
@@ -46,7 +44,7 @@ public class Navigation {
         CurrSceneFXMLFileName = fxmlFileName;
     }
 
-    // Should be substituted with gotoScene, because doesn't update Prev/Curr Scenes
+    // TODO: Should be substituted with gotoScene, because doesn't update Prev/Curr Scenes
     public static void gotoPrevScene(){
         gotoScene(PrevSceneFXMLFileName);
     }

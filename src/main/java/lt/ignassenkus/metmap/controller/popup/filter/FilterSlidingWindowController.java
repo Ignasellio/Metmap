@@ -20,17 +20,11 @@ public class FilterSlidingWindowController {
 
     private Consumer<Filter> onSaveCallback;
 
-    /**
-     * Sets the callback to be executed when the user confirms the filter settings.
-     */
-    public void setOnSave(Consumer<Filter> callback) {
-        this.onSaveCallback = callback;
-    }
+    public void setOnSave(Consumer<Filter> callback) {this.onSaveCallback = callback;}
 
     @FXML
     protected void onButtonConfirmAndClose(ActionEvent event) {
         try {
-            // Validate inputs
             String name = filterNameField.getText().trim() + "["
                     + "window size: " + windowSizeField.getText().trim() + " "
                     + " min. CpGs in window: " + minPointsField.getText().trim()
@@ -41,12 +35,7 @@ public class FilterSlidingWindowController {
             float minHighMet = Float.parseFloat(minHighMetField.getText().trim());
             float minDiff = Float.parseFloat(minDiffField.getText().trim());
 
-            if (name.isEmpty()) name = "Sliding Window Filter";
-
-            // Create the stateful filter
             FilterSlidingWindow filter = new FilterSlidingWindow(name, windowSize, minPoints, minHighMet, minDiff);
-
-            // Pass the filter back to the main controller
             if (onSaveCallback != null) {
                 onSaveCallback.accept(filter);
             }

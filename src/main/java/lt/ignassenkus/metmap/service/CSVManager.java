@@ -31,18 +31,13 @@ public class CSVManager {
         CsvParser parser = new CsvParser(settings);
         List<String> results = new ArrayList<>();
 
-        // Strategy switch:
-        // If rowIndex is negative, we must scan the whole file with a buffer.
-        // If positive, we can stop early.
         String[] targetRow = null;
-
         try (BufferedReader reader = Files.newBufferedReader(new File(filePath).toPath(), StandardCharsets.UTF_8)) {
             parser.beginParsing(reader);
             String[] row;
             long currentIndex = 0;
 
             if (rowIndex >= 0) {
-                // --- Forward Reading ---
                 while ((row = parser.parseNext()) != null) {
                     if (currentIndex == rowIndex) {
                         targetRow = row;
@@ -51,9 +46,6 @@ public class CSVManager {
                     currentIndex++;
                 }
             } else {
-                // --- Reverse Reading (Buffer Strategy) ---
-                // If user wants row -3, we keep a buffer of size 3.
-                // At EOF, the first item in buffer is the one they wanted.
                 int lookBack = Math.abs(rowIndex);
                 LinkedList<String[]> buffer = new LinkedList<>();
 
@@ -64,7 +56,6 @@ public class CSVManager {
                     }
                 }
 
-                // If file was shorter than the lookback, we might not have the specific index
                 if (buffer.size() == lookBack) {
                     targetRow = buffer.getFirst();
                 }
@@ -76,15 +67,11 @@ public class CSVManager {
             parser.stopParsing();
         }
 
-        // Processing the columns (Handling negative column indices)
         if (targetRow != null) {
             int len = targetRow.length;
 
-            // Resolve Start Index
             int s = (startColumnIndex == null) ? 0 : startColumnIndex;
             if (s < 0) s = len + s;
-
-            // Resolve End Index
             int e = (endColumnIndex == null) ? len : endColumnIndex;
             if (e < 0) e = len + e;
 
@@ -110,22 +97,19 @@ public class CSVManager {
      * @param endRow      End row. Negative = offset from end. null = end of file.
      */
     public static List<String> readColumn(String filePath, int columnIndex, Integer startRow, Integer endRow) {
-        // If no negative indices, use the faster method that stops early
         boolean hasNegativeIndices = (startRow != null && startRow < 0) || (endRow != null && endRow < 0);
         if (!hasNegativeIndices) {
             return readColumnForward(filePath, columnIndex, startRow, endRow);
         }
 
-        // --- Negative Index Logic (Must read full file) ---
+        // Negative Index Logic (Must read full file)
         CsvParserSettings settings = new CsvParserSettings();
-        settings.selectIndexes(columnIndex); // Optimization still applies!
+        settings.selectIndexes(columnIndex);
         CsvParser parser = new CsvParser(settings);
 
         List<String> results = new ArrayList<>();
-        // Use LinkedList for efficient add/remove at ends
         LinkedList<String> buffer = new LinkedList<>();
 
-        // We need to determine the strategy based on the combination of start/end
         int s = (startRow == null) ? 0 : startRow;
         Integer e = endRow; // Keep object to know if null
 
@@ -134,9 +118,6 @@ public class CSVManager {
             String[] row;
             long currentIndex = 0;
 
-            // Scenario 1: "All except last X" (start=0, end=-3)
-            // We need a 'lagging' buffer. We only commit to results when we are sure
-            // the value is NOT in the last X.
             if (s >= 0 && e != null && e < 0) {
                 int excludeLast = Math.abs(e);
 
@@ -153,12 +134,8 @@ public class CSVManager {
                     currentIndex++;
                 }
             }
-            // Scenario 2: "Last X rows" (start=-5, end=null)
-            // Just keep a rolling buffer of size X. At end, that IS the result.
             else if (s < 0) {
                 int keepLast = Math.abs(s);
-                // If end is also negative (subset of end), we trim later or handle complex logic.
-                // Simplified: Start from end implies we keep the tail.
 
                 while ((row = parser.parseNext()) != null) {
                     String val = (row.length > 0) ? row[0] : null;
@@ -226,14 +203,14 @@ public class CSVManager {
 
     /**
      * Reads a column directly into a primitive int array.
-     * Extremely memory efficient for millions of numeric rows.
+     * More memory efficient for millions of numeric rows.
      */
     public static int[] readColumnAsInt(String filePath, int columnIndex, Integer startRow, Integer endRow) {
         CsvParserSettings settings = new CsvParserSettings();
         settings.selectIndexes(columnIndex);
         CsvParser parser = new CsvParser(settings);
 
-        int[] data = new int[1024]; // Initial capacity
+        int[] data = new int[1024];
         int count = 0;
 
         long start = (startRow == null) ? 0 : startRow;
@@ -247,7 +224,7 @@ public class CSVManager {
             while ((row = parser.parseNext()) != null) {
                 if (currentRowIndex >= end) break;
                 if (currentRowIndex >= start) {
-                    // Ensure Capacity
+                    // Ensuring Capacity
                     if (count == data.length) {
                         data = Arrays.copyOf(data, data.length * 2);
                     }
@@ -263,7 +240,7 @@ public class CSVManager {
             parser.stopParsing();
         }
 
-        return Arrays.copyOf(data, count); // Trim to exact size
+        return Arrays.copyOf(data, count);
     }
 
     /**
@@ -305,8 +282,6 @@ public class CSVManager {
         return Arrays.copyOf(data, count);
     }
 
-
-    //Internal helper to handle the X, Y, M logic and decimal strings like "1.0"
     private static int parseChromosomeValue(String s) {
         if (s == null || s.isBlank()) return 0;
         String clean = s.toUpperCase().trim();
@@ -316,10 +291,9 @@ public class CSVManager {
             case "M", "MT" -> 25;
             default -> {
                 try {
-                    // Handles "1", "1.0", and "154.0"
                     yield (int) Double.parseDouble(clean);
                 } catch (NumberFormatException e) {
-                    yield 0; // Or throw an error depending on your needs
+                    yield 0;
                 }
             }
         };

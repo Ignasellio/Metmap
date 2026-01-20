@@ -26,24 +26,19 @@ public class FilterVarianceController {
     @FXML
     protected void onButtonConfirmAndClose(ActionEvent event) {
         try {
-            // Validate and build the display name
             String baseName = filterNameField.getText().trim();
             if (baseName.isEmpty()) baseName = "Variance Filter";
-
             String fullName = String.format("%s [Size: %s, Min CpGs: %s, Var: %s]",
                     baseName,
                     windowSizeField.getText().trim(),
                     minPointsField.getText().trim(),
                     varianceThresholdField.getText().trim());
 
-            // Parse numeric parameters
             int windowSize = Integer.parseInt(windowSizeField.getText().trim());
             int minPoints = Integer.parseInt(minPointsField.getText().trim());
             float varThreshold = Float.parseFloat(varianceThresholdField.getText().trim());
 
-            // Create the Welford-based filter
             FilterVariance filter = new FilterVariance(fullName, windowSize, minPoints, varThreshold);
-
             if (onSaveCallback != null) {
                 onSaveCallback.accept(filter);
             }
